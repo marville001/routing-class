@@ -3,7 +3,7 @@ const app = express();
 app.use(express.json())
 
 const port = 8080;
-const todos = {
+let todos = {
     items:[
         {
             id: 1,
@@ -67,7 +67,9 @@ app.get('/:id', function (req, res) {
     const todo = todos.items.find(function (item) {
         return item.id === parseInt(id)
     })
-    return res.send(todo);
+    if(todo) return res.send(todo);
+
+    else return res.send("No todo found with id of "+id)
 })
 
 app.post('/', function (req, res){
@@ -76,8 +78,23 @@ app.post('/', function (req, res){
     return res.send(todos);
 })
 
-app.get('/another', function (req, res){
-    return res.send('another')
+app.put('/:id', function (req, res){
+    const { id } = req.params;
+    todos.items = todos.items.map(item=>{
+        if(item.id === parseInt(id)){
+            return req.body
+        }
+        return item
+    })
+    return res.send(todos);
 })
+
+app.delete('/:id', function (req, res){
+    const { id } = req.params;
+    todos.items = todos.items.filter(item=>item.id !== parseInt(id))
+    return res.send(todos);
+})
+
+
 
 app.listen(port, function (){console.log("application running on port "+ port)})
